@@ -52,28 +52,33 @@ class AuthService {
   }
 }
 
-  Future<dynamic> login(String username) async {
-    final url = Uri.parse('$baseUrl/auth/login');
+Future<dynamic> login({
+  required String name,
+  required String password,
+}) async {
 
-    try {
-      final response = await http.post(
-        url,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: jsonEncode({
-          "sub": username,
-          "role": "ADMIN"
-        }),
-      );
+  final url = Uri.parse('$baseUrl/auth/login');
 
-      if (response.statusCode == 200) {
-        return jsonDecode(response.body);
-      } else {
-        throw Exception("Login failed: ${response.statusCode}");
-      }
-    } catch (e) {
-      throw Exception("API error: $e");
+  try {
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        "name": name,
+        "password": password,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception("Login failed: ${response.body}");
     }
+
+  } catch (e) {
+    throw Exception("API error: $e");
   }
+}
 }

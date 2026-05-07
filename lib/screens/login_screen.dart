@@ -30,7 +30,8 @@ Future<void> submit() async {
 
   try {
     if (isLogin) {
-      await authService.login(usernameController.text);
+      await authService.login( name: usernameController.text,
+        password: passwordController.text,);
 
       Navigator.pushReplacement(
         context,
@@ -54,8 +55,27 @@ Future<void> submit() async {
   } catch (e) {
     print("ERROR: $e");
 
+    String errorMessage = "Something went wrong";
+
+    // Extract backend message if available
+    final error = e.toString();
+
+    if (error.contains("Email already exists")) {
+      errorMessage = "Email already exists";
+    } else if (error.contains("401")) {
+      errorMessage = "Invalid username or password";
+    } else if (error.contains("message")) {
+      // Generic extraction from API response
+      final regex = RegExp(r'"message":"(.*?)"');
+      final match = regex.firstMatch(error);
+
+      if (match != null) {
+        errorMessage = match.group(1)!;
+      }
+    }
+
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Something went wrong")),
+      SnackBar(content: Text(errorMessage)),
     );
   } finally {
     setState(() => isLoading = false);
