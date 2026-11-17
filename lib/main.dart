@@ -1,8 +1,9 @@
-import 'package:my_app/screens/dashboard_screen.dart';
+import 'package:my_app/screens/dashboard/dashboard_screen.dart';
+import 'package:my_app/screens/dashboard/home_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:flutter/material.dart';
-import 'package:my_app/screens/login_screen.dart';
+import 'package:my_app/screens/dashboard/login_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -12,6 +13,7 @@ void main() async {
 
   runApp(MyApp(isLoggedIn: isLoggedIn));
 }
+
 class MyApp extends StatelessWidget {
   final bool isLoggedIn;
 
@@ -24,6 +26,7 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
 
@@ -88,7 +91,7 @@ class _MyHomePageState extends State<MyHomePage> {
           // axis because Columns are vertical (the cross axis would be
           // horizontal).
           //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
+          // TRY THIS: Invoke "x painting" (choose the "Toggle Debug Paint"
           // action in the IDE, or press "p" in the console), to see the
           // wireframe for each widget.
           mainAxisAlignment: .center,

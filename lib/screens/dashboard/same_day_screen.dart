@@ -230,7 +230,7 @@ class _SameDayScreenState extends State<SameDayScreen> {
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: categories.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 14),
+        separatorBuilder: (_, _) => const SizedBox(width: 14),
         itemBuilder: (context, index) {
           final item = categories[index];
           return Column(
@@ -400,7 +400,7 @@ class _ProductCard extends StatelessWidget {
                   height: 170,
                   width: double.infinity,
                   fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Container(
+                  errorBuilder: (_, _, _) => Container(
                     height: 170,
                     color: Colors.grey.shade100,
                     child: const Icon(Icons.image_not_supported, color: Colors.grey),

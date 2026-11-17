@@ -1,84 +1,64 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
+  // Android Emulator
+  final String baseUrl = "http://localhost:9900";
 
-  // 👉 Change this depending on platform
-  final String baseUrl = "http://localhost:9900"; 
-  // For Android emulator → http://10.0.2.2:9900
+  // For physical Android device, use your computer's local IP.
 
+  // SEND OTP
+  Future<dynamic> sendOtp({required String phoneNumber}) async {
+    final url = Uri.parse('$baseUrl/api/riders/auth/send-otp');
 
-  Future<dynamic> register({
-  required String name,
-  required String password,
-  String? email,
-  String? phoneNumber,
-  String? address,
-  String? gender,
-  String? dob, // format: yyyy-MM-dd
-}) async {
-
-  final url = Uri.parse('$baseUrl/auth/register');
-
-  try {
-    final Map<String, dynamic> body = {
-      "name": name,
-      "password": password,
-    };
-
-    // 👉 Add optional fields only if not null
-    if (email != null && email.isNotEmpty) body["email"] = email;
-    if (phoneNumber != null && phoneNumber.isNotEmpty) body["phoneNumber"] = phoneNumber;
-    if (address != null && address.isNotEmpty) body["address"] = address;
-    if (gender != null && gender.isNotEmpty) body["gender"] = gender;
-    if (dob != null && dob.isNotEmpty) body["dob"] = dob;
+    final formattedPhone = phoneNumber.startsWith('+')
+        ? phoneNumber
+        : '+91$phoneNumber';
 
     final response = await http.post(
       url,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode(body),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({"phoneNumber": formattedPhone}),
     );
 
-    if (response.statusCode == 200) {
-      return jsonDecode(response.body);
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      return response.body;
     } else {
-      throw Exception("Register failed: ${response.body}");
+      throw Exception("Send OTP failed: ${response.body}");
     }
-
-  } catch (e) {
-    throw Exception("API error: $e");
   }
-}
 
-Future<dynamic> login({
-  required String name,
-  required String password,
-}) async {
+  // VERIFY OTP
+  Future<dynamic> verifyOtp({
+    required String phoneNumber,
+    required String otp,
+  }) async {
+    final formattedPhone = phoneNumber.startsWith('+')
+        ? phoneNumber
+        : '+91$phoneNumber';
 
-  final url = Uri.parse('$baseUrl/auth/login');
+    final url = Uri.parse('$baseUrl/api/riders/auth/verify-otp');
 
-  try {
     final response = await http.post(
       url,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode({
-        "name": name,
-        "password": password,
-      }),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({"phoneNumber": formattedPhone, "otp": otp}),
     );
 
-    if (response.statusCode == 200) {
-      return jsonDecode(response.body);
-    } else {
-      throw Exception("Login failed: ${response.body}");
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      return response.body;
     }
 
-  } catch (e) {
-    throw Exception("API error: $e");
+    throw Exception("OTP verification failed: ${response.body}");
   }
-}
+
+  // LOGOUT
+  Future<void> logout() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    await prefs.remove('jwtToken');
+    await prefs.remove('isLoggedIn');
+    await prefs.remove('riderPhoneNumber');
+  }
 }
