@@ -1,0 +1,5 @@
+package com.example.cakebuddy_customer
+
+import io.flutter.embedding.android.FlutterActivity
+
+class MainActivity : FlutterActivity()
